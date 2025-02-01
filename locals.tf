@@ -42,7 +42,7 @@ locals {
                                     ) : data.aws_kms_key.kms[0]
 
     cache                           = local.conditions.provision_cache ? {
-        type                        = var.build.cache
+        type                        = var.build.cache.type
         location                    = module.cache[0].bucket[0].id
     } : var.build.cache
 
