@@ -1,8 +1,8 @@
 # Enterprise Terraform 
-## Cumberland Cloud Core Security
-### Secret Manager
+## Cumberland Cloud Orchestrate Build
+### Code Build
 
-Documentation goes here.
+TODO
 
 ### Usage
 
@@ -23,17 +23,18 @@ provider "aws" {
 
 ```
 module "BUILD" {
-	source 					= "github.com/cumberland-terraform/security-sg"
+	source 					= "github.com/cumberland-terraform/orchestrate-build"
 	
 	platform				= {
 		client          	= "<client>"
     	environment         = "<environment>"
 	}
 
-	secret 					= {
+	build 					= {
 		suffix 				= "<suffix>"
-		random 				= {
-			enabled 		= true
+		source 				= {
+			type 			= "<type>"
+			location 		= "<location>"
 		}
 	}
 

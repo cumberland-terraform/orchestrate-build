@@ -6,18 +6,31 @@ variable "platform" {
   })
 }
 
+variable "connection" {
+  description                   = "Codestar Connection configuration object."
+  type                          = object({
+    provider_type               = optional(string, "GITHUB")
+  })
+  default                       = {
+    provider_type               = "GITHUB"
+  }
+}
+
 variable "build" {
   description                   = "Codebuild configuration object."
   type                          = object({
-    source                      = object({
-      type                      = string
-      location                  = string 
-      git_clone_depth           = optional(number ,1)
+    source                      = optional(object({
+      type                      = optional(string, "CODEPIPELINE")
+      location                  = optional(string, null)
+      git_clone_depth           = optional(number, 1)
       git_submodules_config     = optional(object({
-        fetch_submodules        = optional(bool, true)
-      }), {
-        fetch_submodules        = true
-      }) 
+        fetch_submodules        = bool
+      }), null) 
+    }), {
+      type                      = "CODEPIPELINE"
+      location                  = null
+      git_clone_depth           = null
+      git_submodules_config     = null
     })
     
     suffix                      = string
@@ -68,5 +81,20 @@ variable "build" {
       id                          = optional(string, null)
       arn                         = optional(string, null)
     }), null)
+  })
+}
+
+variable "pipeline" {
+  description                     = "CodePipeline configuration object."
+  type                            = object({
+
+    source_stage                  = object({
+      action                      = object({
+        configuration             = object({
+          FullRepositoryId        = string
+          BranchName              = string
+        })
+      })
+    })
   })
 }
