@@ -13,18 +13,20 @@ locals {
                 type            = "KMS"
             }
         }
+        aws_managed_key_alias   = "alias/aws/s3"
+        secret_key_alias        = "alias/aws/secretsmanager"
     }
 
      ## CONDITIONS
     #   Configuration object containing boolean calculations that correspond
     #       to different deployment configurations.
     conditions                      = {
-        provision_kms_key           = var.build.kms_key == null
+        attach_secret_policy        = length(var.secrets) > 0
+        provision_kms_key           = var.kms == null
         provision_cache             = var.build.cache.type == "S3"&& (
                                         var.build.cache.location == null
                                     )
         provision_pipeline          = var.build.source.type == "CODEPIPELINE"
-
         is_vcs                      = contains(
                                         [ "CODECOMMIT", "GITHUB", "GITHUB_ENTERPRISE"],
                                         var.build.source.type
@@ -35,24 +37,15 @@ locals {
     #   Variables that change based on the deployment configuration. 
     kms                             = local.conditions.provision_kms_key ? (
                                         module.kms[0].key
-                                    ) : !var.build.kms_key.aws_managed ? (
-                                        var.build.kms_key
-                                    ) : null
+                                    ) : !var.kms.aws_managed ? (
+                                        var.kms
+                                    ) : data.aws_kms_key.kms[0]
 
     cache                           = local.conditions.provision_cache ? {
         type                        = var.build.cache
         location                    = module.cache[0].bucket[0].id
     } : var.build.cache
 
-
-    environment_variables           = concat(
-                                        var.environment.environment_variables, 
-                                        [ for secret in var.secrets: {
-                                            name = secret
-                                            value = "${module.platform.arn.sm.secret}:${secret}"
-                                            type = "PARAMETER_STORE"
-                                        }]
-                                    )
 
     logs_config                     = var.build.logs_config == null ? {
         group_name                  = join("-", [local.name, "group"])

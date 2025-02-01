@@ -1,3 +1,15 @@
+data "aws_kms_key" "kms" {
+    count                       = var.kms.aws_managed ? 1 : 0
+
+    key_id                      = local.platform_defaults.aws_managed_key_alias
+}
+
+data "aws_kms_key" "secret_kms" {
+    count                       = local.conditions.attach_secret_policy ? 1 : 0
+
+    key_id                      = local.platform_defaults.secret_key_alias
+}
+
 data "aws_iam_policy_document" "build_trust_policy" {
   statement {
     effect                      = "Allow"
@@ -21,15 +33,37 @@ data "aws_iam_policy_document" "build_role_policy" {
     resources                   = ["*"]
   }
 
-  statement {
-    effect                      = "ALLOW"
-    actions                     = [
-                                  "secretsmanager:GetSecretValue",
-                                  "secretsmanager:DescribeSecret"
-                                ]
-    resources                   = [ for secret in var.secrets: 
-                                    "${module.platform.arn.sm.secret}:${secret}"]
+  dynamic "statement" {
+    for_each                    = local.conditions.attach_secret_policy ? (
+                                  toset([1])
+                                ): toset([])
+    content{
+      effect                      = "Allow"
+      actions                     = [
+                                    "secretsmanager:GetSecretValue",
+                                    "secretsmanager:DescribeSecret"
+                                  ]
+      resources                   = [ for secret in var.secrets: 
+                                      "${module.platform.arn.sm.secret}:${secret}"]
+    }
   }
+
+  dynamic "statement" {
+    for_each                    = local.conditions.attach_secret_policy ? (
+                                  toset([1])
+                                ): toset([])
+    content{
+      effect                    = "Allow"
+      actions                   = [ 
+                                  "kms:Encrypt",
+                                  "kms:Decrypt",
+                                  "kms:GenerateDataKey*",
+                                  "kms:DescribeKey"
+                                ]
+      resources                 = [ data.aws_kms_key.secret_kms[0].arn ]
+    }
+  }
+
 }
 
 

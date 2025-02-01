@@ -38,13 +38,13 @@ resource "aws_codebuild_project" "build" {
 
 
     environment {
-        compute_type                = var.environment.build_type
-        image                       = var.environment.image
-        type                        = var.environment.type
-        image_pull_credentials_type = var.environment.image_pull_credentials_type
+        compute_type                = var.build.environment.build_type
+        image                       = var.build.environment.image
+        type                        = var.build.type
+        image_pull_credentials_type = var.build.environment.image_pull_credentials_type
 
         dynamic "environment_variable" {
-            for_each                = { for index, env in local.environment_variables:
+            for_each                = { for index, env in var.build.environment.environment_variables:
                                             index => env }
 
             content {

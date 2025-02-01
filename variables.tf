@@ -19,6 +19,8 @@ variable "connection" {
 variable "build" {
   description                   = "Codebuild configuration object."
   type                          = object({
+    suffix                      = string
+
     source                      = optional(object({
       type                      = optional(string, "CODEPIPELINE")
       location                  = optional(string, null)
@@ -32,9 +34,7 @@ variable "build" {
       git_clone_depth           = null
       git_submodules_config     = null
     })
-    
-    suffix                      = string
-    
+        
     artifact                    = optional(object({
       type                      = optional(string, "NO_ARTIFACTS")
     }), {
@@ -75,12 +75,6 @@ variable "build" {
     }), null)
 
     tags                          = optional(any, null)
-
-    kms_key                       = optional(object({
-      aws_managed                 = optional(bool, false)
-      id                          = optional(string, null)
-      arn                         = optional(string, null)
-    }), null)
   })
 }
 
@@ -99,9 +93,20 @@ variable "pipeline" {
   })
 }
 
-
 variable "secrets" {
   description                     = "List of SecretManager Secret IDs to inject into build environment."
-  type                            = list(str)
+  type                            = list(string)
   default                         = []
+}
+
+variable "kms" {
+  description                     = "Key Management configuration object"
+  type                            = object({
+    aws_managed                   = optional(bool, true)
+    id                            = optional(string, null)
+    arn                           = optional(string, null)
+  })
+  default                         = {
+    aws_managed                    = true
+  }
 }
