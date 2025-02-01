@@ -64,6 +64,16 @@ locals {
     }
     
     build                           = {
+        role                        = upper(join("-", [
+                                        "IMR",
+                                        "BUILD",
+                                        local.name
+                                    ]))
+        policy                      = upper(join("-", [
+                                        "IMP",
+                                        "BUILD",
+                                        local.name
+                                    ]))
         name                        = upper(join("-", [
                                         "BUILD",
                                         local.name
@@ -71,6 +81,16 @@ locals {
     }
 
     pipeline                        = {
+        role                        = upper(join("-", [
+                                        "IMR",
+                                        "PIPE",
+                                        local.name
+                                    ]))
+        policy                      = upper(join("-", [
+                                        "IMP",
+                                        "PIPE",
+                                        local.name
+                                    ]))
         name                        = upper(join("-", [
                                         "PIPE",
                                         local.name

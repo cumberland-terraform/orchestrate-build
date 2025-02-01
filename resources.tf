@@ -1,21 +1,21 @@
 resource "aws_iam_role" "build" {
-    name                            = local.roles.name
+    name                            = local.build.role
     assume_role_policy              = data.aws_iam_policy_document.build_trust_policy.json
 }
 
 resource "aws_iam_role" "pipeline" {
-  name                              = local.roles.pipeline
+  name                              = local.pipeline.role
   assume_role_policy                = data.aws_iam_policy_document.pipeline_trust_policy.json
 }
 
 resource "aws_iam_role_policy" "build" {
-    name                            = local.policies.build
+    name                            = local.build.policy
     role                            = aws_iam_role.build.id
     policy                          = data.aws_iam_policy_document.build_role_policy.json
 }
 
 resource "aws_iam_role_policy" "pipeline" {
-    name                            = local.policies.pipeline
+    name                            = local.pipeline.policy
     role                            = aws_iam_role.pipeline.id
     policy                          = data.aws_iam_policy_document.pipeline_role_policy.json
 }
@@ -35,7 +35,6 @@ resource "aws_codebuild_project" "build" {
         type                        = local.cache.type
         location                    = local.cache.location
     }
-
 
     environment {
         compute_type                = var.build.environment.build_type
