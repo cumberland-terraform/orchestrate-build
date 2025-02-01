@@ -1,44 +1,44 @@
 variable "platform" {
-  description                   = "Platform metadata configuration object."
-  type                          = object({
-    client                      = string 
-    environment                 = string
+  description                     = "Platform metadata configuration object."
+  type                            = object({
+    client                        = string 
+    environment                   = string
   })
 }
 
 variable "connection" {
-  description                   = "Codestar Connection configuration object."
-  type                          = object({
-    provider_type               = optional(string, "GITHUB")
+  description                     = "Codestar Connection configuration object."
+  type                            = object({
+    provider_type                 = optional(string, "GITHUB")
   })
-  default                       = {
-    provider_type               = "GITHUB"
+  default                         = {
+    provider_type                 = "GITHUB"
   }
 }
 
 variable "build" {
-  description                   = "Codebuild configuration object."
-  type                          = object({
-    suffix                      = string
+  description                     = "Codebuild configuration object."
+  type                            = object({
+    suffix                        = string
 
-    source                      = optional(object({
-      type                      = optional(string, "CODEPIPELINE")
-      location                  = optional(string, null)
-      git_clone_depth           = optional(number, 1)
-      git_submodules_config     = optional(object({
-        fetch_submodules        = bool
+    source                        = optional(object({
+      type                        = optional(string, "CODEPIPELINE")
+      location                    = optional(string, null)
+      git_clone_depth             = optional(number, 1)
+      git_submodules_config       = optional(object({
+        fetch_submodules          = bool
       }), null) 
     }), {
-      type                      = "CODEPIPELINE"
-      location                  = null
-      git_clone_depth           = null
-      git_submodules_config     = null
+      type                        = "CODEPIPELINE"
+      location                    = null
+      git_clone_depth             = null
+      git_submodules_config       = null
     })
         
-    artifact                    = optional(object({
-      type                      = optional(string, "NO_ARTIFACTS")
+    artifact                      = optional(object({
+      type                        = optional(string, "NO_ARTIFACTS")
     }), {
-      type                      = "NO_ARTIFACTS"
+      type                        = "NO_ARTIFACTS"
     })
     
     cache                         = optional(object({

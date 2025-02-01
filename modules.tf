@@ -18,10 +18,10 @@ module "kms" {
 
 module "cache" {
   # META ARGUMENTS
-  count                 = local.conditions.provision_bucket ? 1 : 0
+  count                 = local.conditions.provision_cache ? 1 : 0
   source                = "github.com/cumberland-terraform/storage-s3.git"
   # PLATFORM ARGUMENTS
-  platform              = local.platform
+  platform              = var.platform
   # MODULE ARGUMENTS
   kms                   = local.kms
   s3                    = {
@@ -35,7 +35,7 @@ module "artifacts" {
   # META ARGUMENTS
   source                = "github.com/cumberland-terraform/storage-s3.git"
   # PLATFORM ARGUMENTS
-  platform              = local.platform
+  platform              = var.platform
   # MODULE ARGUMENTS
   kms                   = local.kms
   s3                    = {

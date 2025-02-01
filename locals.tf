@@ -52,7 +52,6 @@ locals {
     } : var.build.logs_config
 
     tags                            = merge(var.build.tags, module.platform.tags)
-
     name                            = upper(join("-", [module.platform.prefix,
                                         var.build.suffix
                                     ]))

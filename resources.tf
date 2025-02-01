@@ -1,11 +1,11 @@
 resource "aws_iam_role" "build" {
-    name                            = local.role.name
+    name                            = local.roles.name
     assume_role_policy              = data.aws_iam_policy_document.build_trust_policy.json
 }
 
 resource "aws_iam_role" "pipeline" {
-  name                              = local.role.pipeline
-  assume_role_policy                = data.aws_iam_policy_document.pipleine_trust_policy.json
+  name                              = local.roles.pipeline
+  assume_role_policy                = data.aws_iam_policy_document.pipeline_trust_policy.json
 }
 
 resource "aws_iam_role_policy" "build" {
@@ -112,7 +112,7 @@ resource "aws_codepipeline" "pipeline" {
     }
 }
 
-resource "aws_codestarconnections_connection" "connect" {
+resource "aws_codestarconnections_connection" "source" {
     name                            = local.connection.name
     provider_type                   = var.connection.provider_type
 }
