@@ -4,17 +4,18 @@ resource "aws_iam_role" "build" {
 }
 
 resource "aws_iam_role" "pipeline" {
-  name                          = local.role.pipleine
-  assume_role_policy            = data.aws_iam_policy_document.pipleine_trust_policy.json
+  name                              = local.role.pipeline
+  assume_role_policy                = data.aws_iam_policy_document.pipleine_trust_policy.json
 }
 
 resource "aws_iam_role_policy" "build" {
+    name                            = local.policies.build
     role                            = aws_iam_role.build.id
     policy                          = data.aws_iam_policy_document.build_role_policy.json
 }
 
 resource "aws_iam_role_policy" "pipeline" {
-    name                            = local.policy.pipeline
+    name                            = local.policies.pipeline
     role                            = aws_iam_role.pipeline.id
     policy                          = data.aws_iam_policy_document.pipeline_role_policy.json
 }
@@ -43,7 +44,7 @@ resource "aws_codebuild_project" "build" {
         image_pull_credentials_type = var.environment.image_pull_credentials_type
 
         dynamic "environment_variable" {
-            for_each                = { for index, env in var.environment.environment_variables:
+            for_each                = { for index, env in local.environment_variables:
                                             index => env }
 
             content {
@@ -79,10 +80,10 @@ resource "aws_codebuild_project" "build" {
 
 resource "aws_codepipeline" "pipeline" {
     name                            = local.pipeline.name
-    role_arn                        = aws_iam_role.codepipeline_role.arn
+    role_arn                        = aws_iam_role.pipeline.arn
 
     artifact_store {
-        location                    = module.artifcats.bucket[0].id
+        location                    = module.artifacts.bucket[0].arn
         type                        = local.platform_defaults.pipeline.artifact_store.type
 
         encryption_key {
@@ -111,7 +112,7 @@ resource "aws_codepipeline" "pipeline" {
     }
 }
 
-resource "aws_codestarconnections_connection" "example" {
+resource "aws_codestarconnections_connection" "connect" {
     name                            = local.connection.name
     provider_type                   = var.connection.provider_type
 }

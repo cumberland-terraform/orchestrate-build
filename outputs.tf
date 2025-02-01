@@ -1,10 +1,25 @@
+output "connect" {
+    description                 = "CodeStar metadata"
+    value                       = aws_codestar_connection.connect
+}
+
 output "build" {
-    description                 = "Codebuild metadata"
+    description                 = "CodeBuild metadata"
     value                       = {
         cache                   = local.cache
-        project                 = {
-            id                  = aws_codebuild_project.build.id
-            arn                 = aws_codebuild_project.build.arn
-        }
+        project                 = aws_codebuild_project.build
     }
+}
+
+output "pipeline" {
+    description                 = "CodePipeline metadata"
+    value                       = {
+        artifacts               = module.artifacts.bucket
+        pipeline                = aws_codepipeline.pipeline
+    }
+}
+
+output "kms" {
+    description                 = "KMS metadata"
+    value                       = local.kms
 }

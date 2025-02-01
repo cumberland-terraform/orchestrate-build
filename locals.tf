@@ -45,6 +45,15 @@ locals {
     } : var.build.cache
 
 
+    environment_variables           = concat(
+                                        var.environment.environment_variables, 
+                                        [ for secret in var.secrets: {
+                                            name = secret
+                                            value = "${module.platform.arn.sm.secret}:${secret}"
+                                            type = "PARAMETER_STORE"
+                                        }]
+                                    )
+
     logs_config                     = var.build.logs_config == null ? {
         group_name                  = join("-", [local.name, "group"])
     } : var.build.logs_config
@@ -106,26 +115,25 @@ locals {
         }]
     }
 
-    roles                       = {
-        build                   = upper(join("-", [
-                                    "IMR",
-                                    local.build.name
-                                ]))
-        pipeline                = upper(join("-", [
-                                    "IMR",
-                                    local.pipeline.name
-                                ]))
-    }
-
-    policy                      = {
-        build                   = upper(join("-", [
-                                        "IMP",
+    roles                           = {
+        build                       = upper(join("-", [
+                                        "IMR",
                                         local.build.name
                                     ]))
-        pipeline                = upper(join("-", [
-                                    "IMP",
-                                    local.pipeline.name
-                                ]))
+        pipeline                    = upper(join("-", [
+                                        "IMR",
+                                        local.pipeline.name
+                                    ]))
     }
 
+    policies                        = {
+        build                       = upper(join("-", [
+                                            "IMP",
+                                            local.build.name
+                                        ]))
+        pipeline                    = upper(join("-", [
+                                        "IMP",
+                                        local.pipeline.name
+                                    ]))
+    }
 }

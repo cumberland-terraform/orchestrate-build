@@ -98,3 +98,10 @@ variable "pipeline" {
     })
   })
 }
+
+
+variable "secrets" {
+  description                     = "List of SecretManager Secret IDs to inject into build environment."
+  type                            = list(str)
+  default                         = []
+}
