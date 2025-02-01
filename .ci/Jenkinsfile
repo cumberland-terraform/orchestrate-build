@@ -4,7 +4,7 @@ pipeline {
 	}
 	
 	environment { 
-		MODULE_NAME 				= 'sm'
+		MODULE_NAME 				= 'build'
 		OS_ARCH 					= 'amd64' 
 		TF_LOG 						= 'WARN'
 		TF_VER 						= '1.8.5'

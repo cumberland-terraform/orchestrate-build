@@ -22,7 +22,7 @@ provider "aws" {
 **modules.tf**
 
 ```
-module "secret" {
+module "BUILD" {
 	source 					= "github.com/cumberland-terraform/security-sg"
 	
 	platform				= {
@@ -40,26 +40,13 @@ module "secret" {
 }
 ```
 **NOTE**: `platform` is a parameter for *all* **Cumberland Cloud** modules. For more information about the `platform`, in particular the permitted values of the nested fields, refer to the platform module documentation. The following section goes into more detail regarding the `sg` variable.
-on goes into more detail regarding the `ec2` variable.
+on goes into more detail regarding the `build` variable.
 
 ### Parameters
 
-There are two main parameters to be aware of when using `security-sm`:
+There are two main parameters to be aware of when using `aws-orchestrate-build`:
 
-1. `secret`: This is an object that represents the configuration for a secret. This object contains several properties that allow the user to generate the value of the secret within the module. This is the recommended use of this module. By generating the secret within the module, it stays out of the Terraform state.
-	- `suffix`: (*Required*) This is the suffix appended to the end of the secret name.
-	- `random`: (*Optional*) An object that allows the user to randomize the secret value.
-		- `enabled`: A boolean flag for enabling this subroutine. Defaults to `false`
-		- `length`: The length of the generated string. Defaults to `16`
-		- `special_characters`: A string that contains any special characters that should be included in generation. Defaults to `"!#$%&*()-_=+[]{}<>:?"`
-	- `ssh_key`: (*Optional*) An object that allows the user to generate a private SSH key for the secret. 
-		- `enabled`: A boolean flag for enabling this subroutine. Defaults to `false`.
-		- `algorithm`: Algorithm used to generate key. Defaults to `RSA`
-		- `bit`: Number of bits in key. Defaults to `4096`.
-	- `kms_key`: (*Optional*) KMS key used to encrypt. If no KMS key is passed in, one will be provisioned. 
-		- `id`:  Physical ID of the KMS Key
-		- `arn`: AWS ARN of the KMS Key
-2. `value`: (*Optional*) This argument is only required if you want to override the procedurally generated secrets with your own custom value. It is recommended this should only be done as a last resort, as the secret value will be exposed in the Terraform state. The type of the `value` variable is `any`, meaning any type of data structure may be passed in: a `map`, a `list`, stringified JSON, etc.
+1. `build`: TODO
 
 ## Contributing
 

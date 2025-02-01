@@ -1,41 +1,63 @@
-resource "random_password" "this" {
-    count                       = local.conditions.is_random ? 1 : 0
-    
-    length                      = var.secret.random.length
-    special                     = local.platform_defaults.special
-    override_special            = var.secret.random.special_characters
-}
-
-resource "aws_key_pair" "this" {
-    count                       = local.conditions.is_key ? 1 : 0
-
-    key_name                    = local.name
-    public_key                  = tls_private_key.this[0].public_key_openssh
+resource "aws_iam_role" "this" {
+    name                            = local.role.name
+    assume_role_policy              = data.aws_iam_policy_document.trust_policy.json
 }
 
 
-resource "tls_private_key" "this" {
-    count                       = local.conditions.is_key ? 1 : 0
-
-    algorithm                   = var.secret.ssh_key.algorithm
-    rsa_bits                    = var.secret.ssh_key.bits
+resource "aws_iam_role_policy" "this" {
+    role                            = aws_iam_role.example.name
+    policy                          = data.aws_iam_policy_document.role_policy.json
 }
 
-resource "aws_secretsmanager_secret" "secret" {
-    name                        = local.name
-    kms_key_id                  = local.kms_key_id
-    recovery_window_in_days     = local.platform_defaults.recovery_window_in_days
-    tags                        = local.tags
-    policy                      = local.policy
-    
-    lifecycle {
-        # TF is interpretting the tag calculations as a modification everytime 
-        #   a plan is run, so ignore until issue is resuled.
-        ignore_changes          = [ tags ]
+resource "aws_codebuild_project" "this" {
+    name                            = local.name
+    description                     = var.build.description
+    build_timeout                   = local.platform_defaults.build_timeout
+    service_role                    = aws_iam_role.this.arn
+    tags                            = local.tags
+
+    artifacts {
+        type                        = var.artifact.type
     }
-} 
 
-resource "aws_secretsmanager_secret_version" "secret_version" {
-    secret_id                   = aws_secretsmanager_secret.secret.id
-    secret_string               = local.secret_string
+    cache   {
+        type                        = local.cache.type
+        location                    = local.cache.location
+    }
+
+
+    environment {
+        compute_type                = var.environment.build_type
+        image                       = var.environment.image
+        type                        = var.environment.type
+        image_pull_credentials_type = var.environment.image_pull_credentials_type
+
+        dynamic "environment_variable" {
+            for_each                = { for index, env in var.environment.environment_variables:
+                                            index => env }
+
+            content {
+                name                = environment_variable.value.name
+                value               = environment_variable.value.value
+            }
+        }
+    }
+
+    logs_config {
+        cloudwatch_logs {
+            group_name              = local.logs_config.group_name
+            stream_name             = local.logs_config.stream_name
+        }
+    }
+
+    source {
+        type                        = var.build.source.type
+        location                    = var.build.source.location
+        git_clone_depth             = var.build.source.git_clone_depth
+
+        git_submodules_config {
+            fetch_submodules        = var.build.source.git_submodules_config.fetch_submodules
+        }
+    }
+
 }
