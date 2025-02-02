@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "build_role_policy" {
                                     "secretsmanager:DescribeSecret"
                                   ]
       resources                   = [ for secret in var.secrets: 
-                                      "${module.platform.arn.sm.secret}:${secret}"]
+                                      "${module.platform.aws.arn.sm.secret}:${secret}"]
     }
   }
 

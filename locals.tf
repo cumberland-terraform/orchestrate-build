@@ -39,7 +39,12 @@ locals {
                                         module.kms[0].key
                                     ) : !var.kms.aws_managed ? (
                                         var.kms
-                                    ) : data.aws_kms_key.kms[0]
+                                    ) : {
+                                        id = data.aws_kms_key.kms[0].id
+                                        arn = data.aws_kms_key.kms[0].arn
+                                        aws_managed = true
+                                    }
+
 
     cache                           = local.conditions.provision_cache ? {
         type                        = var.build.cache.type
@@ -47,11 +52,13 @@ locals {
     } : var.build.cache
 
 
-    logs_config                     = var.build.logs_config == null ? {
-        group_name                  = join("-", [local.name, "group"])
-    } : var.build.logs_config
+    logs_config                     = {
+        group_name                  = lower(join("-", [ local.name, "group" ]))
+        stream_name                 = lower(join("-", [ local.name, "stream" ]))
+    }
 
     tags                            = merge(var.build.tags, module.platform.tags)
+
     name                            = upper(join("-", [module.platform.prefix,
                                         var.build.suffix
                                     ]))

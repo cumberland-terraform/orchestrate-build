@@ -9,10 +9,10 @@ variable "platform" {
 variable "connection" {
   description                     = "Codestar Connection configuration object."
   type                            = object({
-    provider_type                 = optional(string, "GITHUB")
+    provider_type                 = optional(string, "GitHub")
   })
   default                         = {
-    provider_type                 = "GITHUB"
+    provider_type                 = "GitHub"
   }
 }
 
@@ -68,11 +68,6 @@ variable "build" {
       image_pull_credentials_type = "CODEBUILD"
       type                        = "LINUX_CONTAINER"
     })
-
-    logs_config                   = optional(object({
-      group_name                  = string
-      stream_name                 = string
-    }), null)
 
     tags                          = optional(any, null)
   })
