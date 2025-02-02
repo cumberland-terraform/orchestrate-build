@@ -39,7 +39,7 @@ resource "aws_codebuild_project" "build" {
     environment {
         compute_type                = var.build.environment.build_type
         image                       = var.build.environment.image
-        type                        = var.build.type
+        type                        = var.build.environment.type
         image_pull_credentials_type = var.build.environment.image_pull_credentials_type
 
         dynamic "environment_variable" {
@@ -66,7 +66,7 @@ resource "aws_codebuild_project" "build" {
         git_clone_depth             = var.build.source.git_clone_depth
 
         dynamic "git_submodules_config" {
-            for_each                = local.conditions.is_vcs && var.build.source.git_submodules_config ? (
+            for_each                = local.conditions.is_vcs && var.build.source.git_submodules_config != null? (
                                         toset([1]) 
                                     ): toset([])
 

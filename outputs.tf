@@ -1,6 +1,6 @@
 output "source" {
     description                 = "CodeStar metadata"
-    value                       = aws_codestar_connection.source
+    value                       = aws_codestarconnections_connection.source
 }
 
 output "build" {
