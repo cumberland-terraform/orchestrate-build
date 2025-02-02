@@ -28,7 +28,7 @@ resource "aws_codebuild_project" "build" {
     tags                            = local.tags
 
     artifacts {
-        type                        = var.artifact.type
+        type                        = var.build.artifact.type
     }
 
     cache   {
