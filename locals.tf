@@ -147,9 +147,9 @@ locals {
 
     policies                        = {
         build                       = upper(join("-", [
-                                            "IMP",
-                                            local.build.name
-                                        ]))
+                                        "IMP",
+                                        local.build.name
+                                    ]))
         pipeline                    = upper(join("-", [
                                         "IMP",
                                         local.pipeline.name
