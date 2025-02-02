@@ -82,7 +82,7 @@ resource "aws_codepipeline" "pipeline" {
     role_arn                        = aws_iam_role.pipeline.arn
 
     artifact_store {
-        location                    = module.artifacts.bucket[0].arn
+        location                    = module.artifacts.bucket[0].id
         type                        = local.platform_defaults.pipeline.artifact_store.type
 
         encryption_key {
