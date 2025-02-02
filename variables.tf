@@ -6,6 +6,11 @@ variable "platform" {
   })
 }
 
+variable "suffix" {
+  description                     = "Naming suffix to apply to resources"
+  type                            = string
+}
+
 variable "connection" {
   description                     = "Codestar Connection configuration object."
   type                            = object({
@@ -19,26 +24,10 @@ variable "connection" {
 variable "build" {
   description                     = "Codebuild configuration object."
   type                            = object({
-    suffix                        = string
-
-    source                        = optional(object({
+    artifact                      = optional(object({
       type                        = optional(string, "CODEPIPELINE")
-      location                    = optional(string, null)
-      git_clone_depth             = optional(number, 1)
-      git_submodules_config       = optional(object({
-        fetch_submodules          = bool
-      }), null) 
     }), {
       type                        = "CODEPIPELINE"
-      location                    = null
-      git_clone_depth             = null
-      git_submodules_config       = null
-    })
-        
-    artifact                      = optional(object({
-      type                        = optional(string, "NO_ARTIFACTS")
-    }), {
-      type                        = "NO_ARTIFACTS"
     })
     
     cache                         = optional(object({
@@ -69,6 +58,20 @@ variable "build" {
       type                        = "LINUX_CONTAINER"
     })
 
+    source                        = optional(object({
+      type                        = optional(string, "CODEPIPELINE")
+      location                    = optional(string, null)
+      git_clone_depth             = optional(number, 1)
+      git_submodules_config       = optional(object({
+        fetch_submodules          = bool
+      }), null) 
+    }), {
+      type                        = "CODEPIPELINE"
+      location                    = null
+      git_clone_depth             = null
+      git_submodules_config       = null
+    })
+        
     tags                          = optional(any, null)
   })
 }
@@ -93,6 +96,7 @@ variable "secrets" {
   type                            = list(string)
   default                         = []
 }
+
 
 variable "kms" {
   description                     = "Key Management configuration object"

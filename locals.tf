@@ -60,7 +60,7 @@ locals {
     tags                            = merge(var.build.tags, module.platform.tags)
 
     name                            = upper(join("-", [module.platform.prefix,
-                                        var.build.suffix
+                                        var.suffix
                                     ]))
 
     connection                      = {
