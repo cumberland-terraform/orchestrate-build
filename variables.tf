@@ -74,6 +74,23 @@ variable "build" {
         
     tags                          = optional(any, null)
   })
+  default                         = {
+    arficact                      = {
+      type                        = "CODEPIPELINE"
+    }
+    cache                         = {
+      type                        = "NO_CACHE"
+    }
+    environment                   = {
+      build_type                  = "BUILD_GENERAL1_SMALL"
+      image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+      image_pull_credentials_type = "CODEBUILD"
+      type                        = "LINUX_CONTAINER"
+    }
+    source                        = {
+      type                        = "CODEPIPELINE"
+    }
+  }
 }
 
 variable "pipeline" {

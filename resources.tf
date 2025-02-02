@@ -4,8 +4,8 @@ resource "aws_iam_role" "build" {
 }
 
 resource "aws_iam_role" "pipeline" {
-  name                              = local.pipeline.role
-  assume_role_policy                = data.aws_iam_policy_document.pipeline_trust_policy.json
+    name                            = local.pipeline.role
+    assume_role_policy              = data.aws_iam_policy_document.pipeline_trust_policy.json
 }
 
 resource "aws_iam_role_policy" "build" {
