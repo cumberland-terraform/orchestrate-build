@@ -12,7 +12,7 @@ module "kms" {
   platform              = var.platform
   # MODULE ARGUMENTS
   kms                   = {
-      alias_suffix      = var.build.suffix
+      alias_suffix      = var.suffix
   }
 }
 
@@ -26,7 +26,7 @@ module "cache" {
   kms                   = local.kms
   s3                    = {
     purpose             = "Build cache for ${local.name}"
-    suffix              = join("-", [var.build.suffix, "cache" ])
+    suffix              = join("-", [var.suffix, "cache" ])
   }
 }
 
@@ -40,6 +40,6 @@ module "artifacts" {
   kms                   = local.kms
   s3                    = {
     purpose             = "Pipeline artifactory for ${local.name}"
-    suffix              = join("-", [var.build.suffix, "artifacts"])
+    suffix              = join("-", [var.suffix, "artifacts"])
   }
 }
