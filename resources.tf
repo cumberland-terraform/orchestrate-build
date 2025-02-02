@@ -104,7 +104,8 @@ resource "aws_codepipeline" "pipeline" {
                 owner               = stage.value.action.owner
                 provider            = stage.value.action.provider
                 version             = stage.value.action.version
-                output_artifacts    = stage.value.action.output_artifacts
+                input_artifacts     = try(stage.value.action.input_artifacts, null)
+                output_artifacts    = try(stage.value.action.output_artifacts, null)
                 configuration       = stage.value.action.configuration
             }
         }
