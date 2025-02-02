@@ -80,7 +80,7 @@ data "aws_iam_policy_document" "pipeline_trust_policy" {
   }
 }
 
-data "aws_iam_policy_document" "pipeline_policy" {
+data "aws_iam_policy_document" "pipeline_role_policy" {
   statement {
     effect                    = "Allow"
     actions                   = [
