@@ -106,8 +106,8 @@ locals {
                 output_artifacts    = [ "source_output" ]
                 configuration       = {
                     ConnectionArn   = aws_codestarconnections_connection.source.arn
-                    FullRepositoryId= var.pipeline.source_stage.FullRepositoryId
-                    BranchName      = var.pipeline.source_stage.BranchName
+                    FullRepositoryId= var.pipeline.source_stage.action.FullRepositoryId
+                    BranchName      = var.pipeline.source_stage.action.BranchName
                 }
             }
         }, {
