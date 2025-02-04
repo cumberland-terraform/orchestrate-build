@@ -132,5 +132,7 @@ variable "topic" {
   type                            = object({
     emails                        = list(string)
   })
-  default                         = [ "chinchalinchin@gmail.com" ]
+  default                         = {
+    emails                        = [ "chinchalinchin@gmail.com" ]
+  }
 }
