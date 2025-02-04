@@ -116,16 +116,25 @@ locals {
     }
 
     policies                        = {
-        build                       = upper(join("-", [
+        build                       = {
+            name                    = upper(join("-", [
                                         "IMP",
                                         "BUILD",
                                         local.name
                                     ]))
-        pipeline                    = upper(join("-", [
+            policy                  = data.aws_iam_policy_document.build_role_policy.json
+            role                    = aws_iam_role.roles["build"].id
+        }
+        pipeline                    = {
+            name                    = upper(join("-", [
                                         "IMP",
                                         "PIPE",
                                         local.name
                                     ]))
+            policy                  = data.aws_iam_policy_document.pipeline_role_policy.json
+            role                    = aws_iam_role.roles["pipeline"].id
+        }
+
     }
 
     roles                           = {
