@@ -49,26 +49,22 @@ locals {
                                         aws_managed = true
                                     }
 
+    build                           = {
+        cache                       = local.conditions.provision_cache ? {
+            type                    = var.build.cache.type
+            location                = module.cache[0].bucket[0].id
+        } : var.build.cache
 
-    cache                           = local.conditions.provision_cache ? {
-        type                        = var.build.cache.type
-        location                    = module.cache[0].bucket[0].id
-    } : var.build.cache
-
-
-    logs_config                     = {
-        group_name                  = lower(join("-", [ local.name, "group" ]))
-        stream_name                 = lower(join("-", [ local.name, "stream" ]))
-    }
-
-    tags                            = merge(var.build.tags, module.platform.tags)
-
-    name                            = upper(join("-", [module.platform.prefix,
-                                        var.suffix
+        name                        = upper(join("-", [
+                                        "BUILD",
+                                        local.name
                                     ]))
 
-    sns                             = {
-        topic                       = upper(join("-", [local.name, "notifications"]))
+        logs_config                 = {
+            group_name              = lower(join("-", [ local.name, "group" ]))
+            stream_name             = lower(join("-", [ local.name, "stream" ]))
+        }
+
     }
 
     connection                      = {
@@ -77,35 +73,12 @@ locals {
                                         local.name
                                     ]))
     }
-    
-    build                           = {
-        role                        = upper(join("-", [
-                                        "IMR",
-                                        "BUILD",
-                                        local.name
+
+    name                            = upper(join("-", [module.platform.prefix,
+                                        var.suffix
                                     ]))
-        policy                      = upper(join("-", [
-                                        "IMP",
-                                        "BUILD",
-                                        local.name
-                                    ]))
-        name                        = upper(join("-", [
-                                        "BUILD",
-                                        local.name
-                                    ]))
-    }
 
     pipeline                        = {
-        role                        = upper(join("-", [
-                                        "IMR",
-                                        "PIPE",
-                                        local.name
-                                    ]))
-        policy                      = upper(join("-", [
-                                        "IMP",
-                                        "PIPE",
-                                        local.name
-                                    ]))
         name                        = upper(join("-", [
                                         "PIPE",
                                         local.name
@@ -142,25 +115,41 @@ locals {
         }]
     }
 
-    roles                           = {
-        build                       = upper(join("-", [
-                                        "IMR",
-                                        local.build.name
-                                    ]))
-        pipeline                    = upper(join("-", [
-                                        "IMR",
-                                        local.pipeline.name
-                                    ]))
-    }
-
     policies                        = {
         build                       = upper(join("-", [
                                         "IMP",
-                                        local.build.name
+                                        "BUILD",
+                                        local.name
                                     ]))
         pipeline                    = upper(join("-", [
                                         "IMP",
-                                        local.pipeline.name
+                                        "PIPE",
+                                        local.name
                                     ]))
     }
+
+    roles                           = {
+        build                       = {
+            assume_role_policy      = data.aws_iam_policy_document.build_trust_policy.json
+            name                    = upper(join("-", [
+                                        "IMR",
+                                        "BUILD",
+                                        local.name
+                                    ]))
+        }
+        pipeline                    = {
+            assume_role_policy      = data.aws_iam_policy_document.pipeline_trust_policy.json
+            name                    = upper(join("-", [
+                                        "IMR",
+                                        "PIPE",
+                                        local.name
+                                    ]))
+        }
+    }
+
+    sns                             = {
+        topic                       = upper(join("-", [local.name, "notifications"]))
+    }
+
+    tags                            = merge(var.build.tags, module.platform.tags)
 }

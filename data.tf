@@ -121,3 +121,25 @@ data "aws_iam_policy_document" "pipeline_role_policy" {
     resources                 = [ aws_codebuild_project.build.arn ]
   }
 }
+
+data "aws_iam_policy_document" "eventbridge_trust_policy" {
+  statement {
+    effect                    = "Allow"
+
+    principals {
+      type                    = "Service"
+      identifiers             = ["events.amazonaws.com"]
+    }
+
+    actions                   = ["sts:AssumeRole"]
+  }
+}
+
+
+data "aws_iam_policy_document" "eventbridge_role_policy" {
+  statement {
+    effect                    = "Allow"
+    actions                   = [ "sns:Publish" ]
+    resources                 = [ aws_sns_topic.notifications.arn ]
+  }
+}

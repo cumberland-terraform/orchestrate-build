@@ -1,24 +1,17 @@
-resource "aws_iam_role" "build" {
-    name                            = local.build.role
-    assume_role_policy              = data.aws_iam_policy_document.build_trust_policy.json
+resource "aws_iam_role" "roles" {
+    for_each                        = local.roles
+
+    name                            = each.value.name
+    assume_role_policy              = each.value.assume_role_policy
 }
 
-resource "aws_iam_role" "pipeline" {
-    name                            = local.pipeline.role
-    assume_role_policy              = data.aws_iam_policy_document.pipeline_trust_policy.json
-}
+resource "aws_iam_role_policy" "policies" {
+    for_each                        = local.policies
 
-resource "aws_iam_role_policy" "build" {
-    name                            = local.build.policy
-    role                            = aws_iam_role.build.id
-    policy                          = data.aws_iam_policy_document.build_role_policy.json
-}
-
-resource "aws_iam_role_policy" "pipeline" {
-    name                            = local.pipeline.policy
-    role                            = aws_iam_role.pipeline.id
-    policy                          = data.aws_iam_policy_document.pipeline_role_policy.json
-}
+    name                            = each.value.name
+    policy                          = each.value.policy
+    role                            = each.value.role
+} 
 
 resource "aws_codebuild_project" "build" {
     lifecycle {
@@ -29,7 +22,7 @@ resource "aws_codebuild_project" "build" {
     name                            = local.build.name
     description                     = var.build.description
     build_timeout                   = local.platform_defaults.build_timeout
-    service_role                    = aws_iam_role.build.arn
+    service_role                    = aws_iam_role.roles["build"].arn
     tags                            = local.tags
 
     artifacts {
@@ -37,8 +30,8 @@ resource "aws_codebuild_project" "build" {
     }
 
     cache   {
-        type                        = local.cache.type
-        location                    = local.cache.location
+        type                        = local.build.cache.type
+        location                    = local.build.cache.location
     }
 
     environment {
@@ -60,8 +53,8 @@ resource "aws_codebuild_project" "build" {
 
     logs_config {
         cloudwatch_logs {
-            group_name              = local.logs_config.group_name
-            stream_name             = local.logs_config.stream_name
+            group_name              = local.build.logs_config.group_name
+            stream_name             = local.build.logs_config.stream_name
         }
     }
 
@@ -89,7 +82,7 @@ resource "aws_codepipeline" "pipeline" {
     }
 
     name                            = local.pipeline.name
-    role_arn                        = aws_iam_role.pipeline.arn
+    role_arn                        = aws_iam_role.roles["pipeline"].arn
     tags                            = local.tags
 
     artifact_store {
