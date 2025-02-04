@@ -117,7 +117,7 @@ resource "aws_codestarconnections_connection" "source" {
     provider_type                   = var.connection.provider_type
 }
 
-resource "aws_sns_topic" "notications" {
+resource "aws_sns_topic" "notifications" {
     name                            = local.sns.topic
 }
 
