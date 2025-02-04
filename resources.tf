@@ -125,7 +125,7 @@ resource "aws_sns_topic_subscription" "email_subscription" {
     for_each                        = { for index, email in var.topic.emails:
                                             index => email }
   
-    topic_arn                       = aws_sns_topic.codebuild_notifications.arn
+    topic_arn                       = aws_sns_topic.notifications.arn
     protocol                        = local.platform_defaults.topic.protocal
     endpoint                        = each.value
 }
