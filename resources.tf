@@ -21,6 +21,11 @@ resource "aws_iam_role_policy" "pipeline" {
 }
 
 resource "aws_codebuild_project" "build" {
+    lifecycle {
+        # NOTE: Tag calculations are interpretted as changes
+        ignore_changes              = [ tags ]
+    }
+
     name                            = local.build.name
     description                     = var.build.description
     build_timeout                   = local.platform_defaults.build_timeout
@@ -78,8 +83,14 @@ resource "aws_codebuild_project" "build" {
 }
 
 resource "aws_codepipeline" "pipeline" {
+    lifecycle {
+        # NOTE: Tag calculations are interpretted as changes
+        ignore_changes              = [ tags ]
+    }
+
     name                            = local.pipeline.name
     role_arn                        = aws_iam_role.pipeline.arn
+    tags                            = local.tags
 
     artifact_store {
         location                    = module.artifacts.bucket[0].id
@@ -118,7 +129,13 @@ resource "aws_codestarconnections_connection" "source" {
 }
 
 resource "aws_sns_topic" "notifications" {
+    lifecycle {
+        # NOTE: Tag calculations are interpretted as changes
+        ignore_changes              = [ tags ]
+    }
+
     name                            = local.sns.topic
+    tags                            = local.tags
 }
 
 resource "aws_sns_topic_subscription" "email_subscription" {
