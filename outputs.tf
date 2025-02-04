@@ -6,7 +6,7 @@ output "source" {
 output "build" {
     description                 = "CodeBuild metadata"
     value                       = {
-        cache                   = local.cache
+        cache                   = local.build.cache
         project                 = aws_codebuild_project.build
     }
 }
