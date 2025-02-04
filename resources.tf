@@ -126,6 +126,6 @@ resource "aws_sns_topic_subscription" "email_subscription" {
                                             index => email }
   
     topic_arn                       = aws_sns_topic.notifications.arn
-    protocol                        = local.platform_defaults.topic.protocal
+    protocol                        = local.platform_defaults.topic.protocol
     endpoint                        = each.value
 }
