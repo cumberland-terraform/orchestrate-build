@@ -149,8 +149,8 @@ resource "aws_cloudwatch_event_rule" "rules" {
     tags                            = local.tags
 }
 
-resource "aws_cloudwatch_event_target" "codebuild_success_target" {
-    for_each                        = aws_cloudwatch_event.rule.rules
+resource "aws_cloudwatch_event_target" "targetS" {
+    for_each                        = aws_cloudwatch_event_rule.rules
 
     rule                            = each.value.name
     target_id                       = join("-", ["sns", each.key, "target"])
