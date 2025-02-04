@@ -116,3 +116,16 @@ resource "aws_codestarconnections_connection" "source" {
     name                            = local.connection.name
     provider_type                   = var.connection.provider_type
 }
+
+resource "aws_sns_topic" "notications" {
+    name                            = local.sns.topic
+}
+
+resource "aws_sns_topic_subscription" "email_subscription" {
+    for_each                        = { for index, email in var.topic.emails:
+                                            index => email }
+  
+    topic_arn                       = aws_sns_topic.codebuild_notifications.arn
+    protocol                        = local.platform_defaults.topic.protocal
+    endpoint                        = each.value
+}

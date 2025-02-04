@@ -13,6 +13,10 @@ locals {
                 type            = "KMS"
             }
         }
+        topic                   = {
+            protocol            = "email"
+        }
+        
         aws_managed_key_alias   = "alias/aws/s3"
         secret_key_alias        = "alias/aws/secretsmanager"
     }
@@ -62,6 +66,10 @@ locals {
     name                            = upper(join("-", [module.platform.prefix,
                                         var.suffix
                                     ]))
+
+    sns                             = {
+        topic                       = upper(join(["-", [local.name, "notifications"]]))
+    }
 
     connection                      = {
         name                        = upper(join("-", [

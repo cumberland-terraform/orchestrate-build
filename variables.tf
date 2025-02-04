@@ -126,3 +126,11 @@ variable "kms" {
     aws_managed                    = true
   }
 }
+
+variable "topic" {
+  description                     = "SNS Topic configuration object."
+  type                            = object({
+    emails                        = list(string)
+  })
+  default                         = [ "chinchalinchin@gmail.com" ]
+}
