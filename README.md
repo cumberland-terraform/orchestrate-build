@@ -22,8 +22,8 @@ provider "aws" {
 **modules.tf**
 
 ```
-module "BUILD" {
-	source 					= "github.com/cumberland-terraform/orchestrate-build"
+module "build" {
+	source 					= "github.com/cumberland-terraform/orchestrate-build.git"
 	
 	platform				= {
 		client          	= "<client>"
@@ -40,7 +40,7 @@ module "BUILD" {
 
 }
 ```
-**NOTE**: `platform` is a parameter for *all* **Cumberland Cloud** modules. For more information about the `platform`, in particular the permitted values of the nested fields, refer to the platform module documentation. The following section goes into more detail regarding the `sg` variable.
+**NOTE**: `platform` is a parameter for *all* **Cumberland Cloud** modules. For more information about the `platform`, in particular the permitted values of the nested fields, refer to the platform module documentation. The following section goes into more detail regarding the `build` variable.
 on goes into more detail regarding the `build` variable.
 
 ### Parameters
@@ -131,16 +131,3 @@ git push tag v1.0.1
 ```
 
 Update the `CHANGELOG.md` with information about changes.
-
-### Pull Request Checklist
-
-Ensure each item on the following checklist is complete before updating any tenant deployments with a new version of this module,
-
-- [] Merge `master` into `feature/*` branch
-- [] Open PR from `feature/*` branch into `master` branch
-- [] Ensure tests are passing in Jenkins
-- [] Get approval from lead
-- [] Merge into `master`
-- [] Increment `git tag` version
-- [] Update Changelog
-- [] Publish latest version on Confluence

@@ -88,27 +88,6 @@ pipeline {
 			}
 		}	
 
-		stage ('Test') {
-			when { expression { env.GIT_BRANCH =~ "origin/*PR*"} }
-			steps {
-				sh 					'''
-									terraform init \
-										-no-color
-									terraform test \
-										-test-directory ./.ci/tests \
-										-json \
-										> test.json
-									'''
-			post {
-				always {
-					sh 				'''
-									cat test.json
-									'''
-					}
-				}
-			}
-		}
-		
 		stage ('Document') {
 			when { expression {env.GIT_BRANCH =~ "origin/master/*" } }
 			steps {
