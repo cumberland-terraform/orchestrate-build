@@ -139,3 +139,20 @@ resource "aws_sns_topic_subscription" "email_subscription" {
     protocol                        = local.platform_defaults.topic.protocol
     endpoint                        = each.value
 }
+
+resource "aws_cloudwatch_event_rule" "rules" {
+    for_each                        = local.rules
+
+    description                     = each.value.description
+    event_pattern                   = each.value.event_pattern
+    name                            = each.value.name
+    tags                            = local.tags
+}
+
+resource "aws_cloudwatch_event_target" "codebuild_success_target" {
+    for_each                        = aws_cloudwatch_event.rule.rules
+
+    rule                            = each.value.name
+    target_id                       = join("-", ["sns", each.key, "target"])
+    arn                             = aws_sns_topic.notifications.arn
+}

@@ -37,18 +37,14 @@ locals {
                                     )
     }
 
+    ## NAMING CONVENTION
+    #   String that is appended to all resource names
+    name                            = upper(join("-", [module.platform.prefix,
+                                        var.suffix
+                                    ]))
+
     ## CALCULATED PROPERTIES
     #   Variables that change based on the deployment configuration. 
-    kms                             = local.conditions.provision_kms_key ? (
-                                        module.kms[0].key
-                                    ) : !var.kms.aws_managed ? (
-                                        var.kms
-                                    ) : {
-                                        id = data.aws_kms_key.kms[0].id
-                                        arn = data.aws_kms_key.kms[0].arn
-                                        aws_managed = true
-                                    }
-
     build                           = {
         cache                       = local.conditions.provision_cache ? {
             type                    = var.build.cache.type
@@ -74,9 +70,15 @@ locals {
                                     ]))
     }
 
-    name                            = upper(join("-", [module.platform.prefix,
-                                        var.suffix
-                                    ]))
+    kms                             = local.conditions.provision_kms_key ? (
+                                        module.kms[0].key
+                                    ) : !var.kms.aws_managed ? (
+                                        var.kms
+                                    ) : {
+                                        id = data.aws_kms_key.kms[0].id
+                                        arn = data.aws_kms_key.kms[0].arn
+                                        aws_managed = true
+                                    }
 
     pipeline                        = {
         name                        = upper(join("-", [
@@ -125,6 +127,14 @@ locals {
             policy                  = data.aws_iam_policy_document.build_role_policy.json
             role                    = aws_iam_role.roles["build"].id
         }
+        events                      = {
+            name                    = upper(join("-", [
+                                        "IMP",
+                                        "EVENTS",
+                                        local.name
+                                    ]))
+            policy                  = data.aws_iam_policy_document.eventbridge_role_policy.json
+        }
         pipeline                    = {
             name                    = upper(join("-", [
                                         "IMP",
@@ -146,12 +156,45 @@ locals {
                                         local.name
                                     ]))
         }
+        events                      = {
+            assume_role_policy      = data.aws_iam_policy_document.eventbridge_trust_policy.json
+            name                    = upper(join("-", [
+                                        "IMR",
+                                        "EVENTS",
+                                        local.name
+                                    ]))
+        }
         pipeline                    = {
             assume_role_policy      = data.aws_iam_policy_document.pipeline_trust_policy.json
             name                    = upper(join("-", [
                                         "IMR",
                                         "PIPE",
                                         local.name
+                                    ]))
+        }
+    }
+
+    rules                           = {
+        success                     = {
+            description             = "Triggered on successful CodeBuild builds."
+            event_pattern           = templatefile("${path.module}/rules/success.json", {
+                project                 = aws_codebuild_project.build.id
+            })
+            name                    = upper(join("-", [
+                                        "EVENT",
+                                        local.name,
+                                        "SUCCESS"
+                                    ]))
+        }
+        failure                     = {
+            description             = "Triggered on failed CodeBuild builds."
+            event_pattern           = templatefile("${path.module}/rules/failure.json", {
+                project                 = aws_codebuild_project.build.id
+            })
+            name                    = upper(join("-", [
+                                        "EVENT",
+                                        local.name,
+                                        "SUCCESS" 
                                     ]))
         }
     }
